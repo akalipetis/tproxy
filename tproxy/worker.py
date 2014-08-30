@@ -57,11 +57,11 @@ class Worker(ProxyServer):
         return os.getpid()
 
     def init_process(self):
-        #gevent doesn't reinitialize dns for us after forking
-        #here's the workaround
-        gevent.core.dns_shutdown(fail_requests=1)
-        gevent.core.dns_init()
-
+        if gevent.version_info[0] == 0:
+            #gevent doesn't reinitialize dns for us after forking
+            #here's the workaround
+            gevent.core.dns_shutdown(fail_requests=1)
+            gevent.core.dns_init()
         util.set_owner_process(self.cfg.uid, self.cfg.gid)
 
         # Reseed the random number generator
